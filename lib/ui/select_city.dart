@@ -40,6 +40,7 @@ class _SelectCity extends State<SelectCity>{
         actions: [
           TextButton(
             onPressed: (){
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));
               // Navigator.pushReplacement(context, MaterialPageRoute(
               // builder: (context) => const Home()));
               
