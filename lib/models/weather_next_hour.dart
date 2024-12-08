@@ -1,7 +1,7 @@
 import 'package:weather_app/models/weather.dart';
 
 class WeatherNextHour extends Weather{
-  late String timeForecast;
+  late String _timeForecast;
 
   WeatherNextHour({
     super.id,
@@ -14,6 +14,8 @@ class WeatherNextHour extends Weather{
     super.humidity,
     super.sunrise,
     super.sunset,
-    this.timeForecast = "",
-  });
+    String timeForecast = "",
+  }) : _timeForecast = timeForecast;
+
+  String get timeForecast => _timeForecast;
 }
