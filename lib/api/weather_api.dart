@@ -9,8 +9,10 @@ import 'package:intl/intl.dart';
 
 import 'city_api.dart';
 
-// fetchWeatherData(int id): thoi tiet hien tai, lay theo Id, ung voi models/weather.dart
-// fetchWeatherNextHour(int id): thoi tiet cac gio toi, ung voi models/weather_next_hour
+// fetchWeatherData(String name): thoi tiet hien tai, lay theo ten thanh pho, ung voi models/weather.dart
+// fetchWeatherNextHour(String name): thoi tiet cac gio toi, ung voi models/weather_next_hour
+// fetchWeather_A_NextHour(String name, int selectedId): lay thoi tiet tai 1 thoi diem sap toi tai 1 thanh pho
+// selectedId: la index thanh pho duoc chon trong cac gio toi
 // Chu y cach goi ham: Can toi 1 method void async de thuc hien (vi van de dong bo)
 // Chi tiet tham khao phan Test duoc comment ben duoi
 
@@ -58,18 +60,25 @@ class WeatherApi {
     );
     return weather;
   }
+  static Future<WeatherNextHour> fetchWeather_A_NextHour(String name, int selectedId) async{
+    List<WeatherNextHour> weatherNextHour = [];
+    weatherNextHour = await WeatherApi.fetchWeatherNextHour(name);
+    return weatherNextHour[selectedId];
+  }
   static Future<List<WeatherNextHour>> fetchWeatherNextHour(String name) async{
     List<WeatherNextHour> weatherNextHourList = [];
     int id = WeatherApi.getIdFromCity(name);
     var weatherResult = await http.get(
         Uri.parse(searchNextHour + id.toString() + keyId));
     if (weatherResult.statusCode != 200) {
-      throw Exception("Failed to fetch weather data. Status code: ${weatherResult.statusCode}");
+      throw Exception("Failed to fetch weather data. Status code: "
+          "${weatherResult.statusCode}");
     }
     var result = json.decode(weatherResult.body);
     for (var item in result['list']) {
       int timestamp = item['dt'];
-      DateTime utcTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true);
+      DateTime utcTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000,
+          isUtc: true);
       DateTime localTime = utcTime.toLocal();
       WeatherNextHour wtNH = WeatherNextHour(
         id: result['city']['id'],
@@ -89,28 +98,36 @@ class WeatherApi {
 }
 
 // Test function fetchWeatherData:
-// class TestAPI{
-//   static Weather weather = Weather();
-//   static void fetchData() async{
-//     weather = await WeatherApi.fetchWeatherData("Ha Noi");
-//     print(weather.temp);
-//   }
-// }
+class TestAPI1{
+  //initiatilization
+  static double temperature = 0;
+  static String weatherStateName = 'Loading..';
+  static void fetchData(String name) async{
+    Weather weather = Weather();
+    weather = await WeatherApi.fetchWeatherData(name);
+    temperature = weather.temp;
+    weatherStateName = weather.main;
+    print(temperature);
+    print(weatherStateName);
+  }
+}
 // void main() async {
-//   TestAPI.fetchData();
+//   TestAPI1.fetchData("Ha Noi");
 // }
 
 // Test function fetchWeatherNextHour:
-// class TestAPI{
-//   List<WeatherNextHour> weatherNextHour = [];
-//   void fetchData() async{
-//     weatherNextHour = await WeatherApi.fetchWeatherNextHour("Ha Noi");
-//     for (WeatherNextHour wtNH in weatherNextHour){
-//       print(wtNH.timeForecast);
-//     }
-//   }
-// }
-// void main() async {
-//   TestAPI testAPI = TestAPI();
-//   testAPI.fetchData();
-// }
+class TestAPI2{
+  static WeatherNextHour nextHour = WeatherNextHour();
+  static void fetchData() async{
+    List<WeatherNextHour> weatherNextHour = [];
+    weatherNextHour = await WeatherApi.fetchWeatherNextHour("Ha Noi");
+    for (WeatherNextHour wtNH in weatherNextHour){
+      // nextHour = wtNH;
+      // print(nextHour.temp);
+      // print(nextHour.timeForecast);
+    }
+  }
+}
+void main() async {
+  TestAPI2.fetchData();
+}
