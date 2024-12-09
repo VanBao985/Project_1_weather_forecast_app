@@ -1,125 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:weather_app/models/constants.dart';
-import 'package:weather_app/widgets/weather_item.dart';
+import 'package:weather_app/api/weather_api.dart';
+import 'package:weather_app/models/weather.dart';
+import 'package:weather_app/ui/select_city.dart';
+import 'package:weather_app/widgets/weather_item.dart';  // Import weatherItem widget
 
 class Home extends StatefulWidget {
-  const Home({Key? key}) : super(key: key);
+  final String location;
+  const Home({Key? key, required this.location}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-  Constants myConstants = Constants();
+  late String location;
+  Weather? currentWeather;
+  bool isLoading = true;
 
-  // Dữ liệu mặc định
-  int temperature = 40; // Nhiệt độ mặc định
-  int maxTemp = 40; // Nhiệt độ cao nhất mặc định
-  String weatherStateName = 'Mưa nhẹ'; // Tên trạng thái thời tiết mặc định
-  int humidity = 60; // Độ ẩm mặc định
-  int windSpeed = 15; // Tốc độ gió mặc định
-
-  var currentDate = DateFormat('dd MMMM yyyy').format(DateTime.now());
-  String imageUrl = 'heavyrain'; // Ảnh thời tiết mặc định
-  String location = 'Hà Nội'; // Vị trí mặc định
-
-  // Danh sách các thành phố (có thể mở rộng sau)
-  List<String> cities = ['Hà Nội', 'Phú Thọ'];
-
-  // Định nghĩa lại Shader linearGradient
   final Shader linearGradient = const LinearGradient(
     colors: <Color>[Color(0xffABCFF2), Color(0xff9AC6F3)],
   ).createShader(const Rect.fromLTWH(0.0, 0.0, 200.0, 70.0));
 
   @override
+  void initState() {
+    super.initState();
+    location = widget.location; // Set location from constructor
+    fetchCurrentWeather();
+  }
+
+  Future<void> fetchCurrentWeather() async {
+    setState(() {
+      isLoading = true;
+    });
+    try {
+      Weather weather = await WeatherApi.fetchWeatherData(location);
+      setState(() {
+        currentWeather = weather;
+      });
+    } catch (e) {
+      print("Error fetching weather data: $e");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Lấy kích thước màn hình
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size(size.width,100), // Đặt chiều cao của AppBar
-        child: Stack(
-          children: [
-            Container(
-              width: size.width,
-              height: 100,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/background.png'), // Đường dẫn tới ảnh nền
-                  fit: BoxFit.cover, // Đảm bảo ảnh bao phủ toàn bộ chiều rộng
+        preferredSize: const Size.fromHeight(100),
+        child: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.asset(
+                  'assets/profile.png',
+                  width: 50,
+                  height: 50,
                 ),
               ),
-            ),
-            Container(
-              width: size.width,
-              height: 100,
-              color: Colors.white.withOpacity(0), // Thêm lớp màu trong suốt với độ mờ
-            ),
-            // Các widget trong AppBar
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              width: size.width,
-
-              child: Row(
-
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-
-                  // Ảnh đại diện
-                  ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    child: Image.asset(
-                      'assets/profile.png',
-                      width: 50,
-                      height: 50,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SelectCity(),
                     ),
-                  ),
-                  // Dropdown chọn vị trí
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/pin.png',
-                        width: 20,
-                      ),
-                      const SizedBox(
-                        width: 3,
-                      ),
-                      DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                            value: location,
-                            icon: const Icon(Icons.keyboard_arrow_down),
-                            items: cities.map((String location) {
-                              return DropdownMenuItem(
-                                  value: location, child: Text(location));
-                            }).toList(),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                location = newValue!;
-                              });
-                            }),
-                      ),
-                    ],
-                  ),
-                ],
-
-
-
+                  ).then((selectedLocation) {
+                    if (selectedLocation != null) {
+                      setState(() {
+                        location = selectedLocation;
+                      });
+                      fetchCurrentWeather();
+                    }
+                  });
+                },
+                child: Text(
+                  location,
+                  style: const TextStyle(fontSize: 20, color: Colors.white),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
         ),
       ),
-      body: Container(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : currentWeather == null
+          ? const Center(child: Text("Không thể tải dữ liệu thời tiết."))
+          : Container(
         width: size.width,
         height: size.height,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/background.png'), // Đường dẫn tới ảnh nền
-            fit: BoxFit.cover, // Đảm bảo ảnh bao phủ toàn bộ màn hình
+            image: AssetImage('assets/background.png'),
+            fit: BoxFit.cover,
           ),
         ),
         child: SingleChildScrollView(
@@ -136,52 +128,41 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Text(
-                currentDate,
+                DateFormat('dd MMMM yyyy').format(DateTime.now()),
                 style: const TextStyle(
-                  fontFamily: 'Roboto',
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
                   fontSize: 16.0,
+                  color: Colors.white,
                 ),
               ),
-              const SizedBox(
-                height: 50,
-              ),
+              const SizedBox(height: 50),
               Container(
                 width: size.width,
                 height: 200,
                 decoration: BoxDecoration(
-                    color: myConstants.primaryColor,
-                    borderRadius: BorderRadius.circular(15),
-                    boxShadow: [
-                      BoxShadow(
-                        color: myConstants.primaryColor.withOpacity(.5),
-                        offset: const Offset(0, 25),
-                        blurRadius: 10,
-                        spreadRadius: -12,
-                      )
-                    ]),
+                  color: Colors.blueAccent.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(15),
+                ),
                 child: Stack(
-                  clipBehavior: Clip.none,
                   children: [
                     Positioned(
                       top: -40,
                       left: 20,
-                      child: imageUrl == ''
-                          ? const Text('')
-                          : Image.asset(
-                        'assets/' + imageUrl + '.png',
+                      child: Image.network(
+                        'https://openweathermap.org/img/wn/${currentWeather!.icon}@2x.png',
                         width: 150,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.cloud, size: 150, color: Colors.white);
+                        },
                       ),
                     ),
                     Positioned(
                       bottom: 30,
                       left: 20,
                       child: Text(
-                        weatherStateName,
+                        currentWeather!.description,
                         style: const TextStyle(
-                          color: Colors.white,
                           fontSize: 20,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -194,7 +175,7 @@ class _HomeState extends State<Home> {
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text(
-                              temperature.toString(),
+                              currentWeather!.temp.toStringAsFixed(1),
                               style: TextStyle(
                                 fontSize: 80,
                                 fontWeight: FontWeight.bold,
@@ -202,12 +183,12 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                           ),
-                          Text(
-                            'o',
+                          const Text(
+                            '°C',
                             style: TextStyle(
                               fontSize: 40,
                               fontWeight: FontWeight.bold,
-                              foreground: Paint()..shader = linearGradient,
+                              color: Colors.white,
                             ),
                           )
                         ],
@@ -216,9 +197,8 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-              const SizedBox(
-                height: 50,
-              ),
+              const SizedBox(height: 20),
+              // Using weatherItem widget
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Row(
@@ -226,25 +206,26 @@ class _HomeState extends State<Home> {
                   children: [
                     weatherItem(
                       text: 'Tốc độ gió',
-                      value: windSpeed,
+                      value: currentWeather!.wind.toInt(),
                       unit: 'km/h',
                       imageUrl: 'assets/windspeed.png',
                     ),
                     weatherItem(
                       text: 'Độ ẩm',
-                      value: humidity,
-                      unit: '',
+                      value: currentWeather!.humidity.toInt(),
+                      unit: '%',
                       imageUrl: 'assets/humidity.png',
                     ),
                     weatherItem(
                       text: 'Nhiệt độ tối đa',
-                      value: maxTemp,
+                      value: currentWeather!.temp.toInt(),
                       unit: '°C',
                       imageUrl: 'assets/max-temp.png',
                     ),
                   ],
                 ),
               ),
+              const SizedBox(height: 50),
             ],
           ),
         ),

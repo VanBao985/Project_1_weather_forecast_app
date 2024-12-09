@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:weather_app/models/city.dart';
-
-import 'home.dart';
+import 'package:weather_app/ui/home.dart';
 
 class SelectCity extends StatefulWidget {
   const SelectCity({Key? key}) : super(key: key);
@@ -12,8 +11,7 @@ class SelectCity extends StatefulWidget {
   }
 }
 
-class _SelectCity extends State<SelectCity>{
-
+class _SelectCity extends State<SelectCity> {
   String _searchText = "";
   List<City> cities = City.citiesList;
 
@@ -38,17 +36,27 @@ class _SelectCity extends State<SelectCity>{
         automaticallyImplyLeading: false,
         actions: [
           TextButton(
-            onPressed: (){
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const Home()));
-              // Navigator.pushReplacement(context, MaterialPageRoute(
-              // builder: (context) => const Home()));
-              
-              // List<City> list = CityAPI.getSelectedCities();
-              // for (City city in list){
-              //   print(city.name);
-              // }
+            onPressed: () {
+              // Lấy thành phố đã chọn
+              List<City> selectedCities = cities.where((city) => city.isSelected).toList();
+              if (selectedCities.isNotEmpty) {
+                // Trả lại tên thành phố đã chọn cho Home
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Home(location: selectedCities[0].name),
+                  ),
+                );
+              } else {
+                // Nếu không chọn thành phố nào, giữ nguyên
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const Home(location: 'Hà Nội')),
+                );
+              }
             },
-            child: const Text("Next",
+            child: const Text(
+              "Next",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -63,18 +71,14 @@ class _SelectCity extends State<SelectCity>{
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              onChanged: (text){
+              onChanged: (text) {
                 setState(() {
-                _searchText = text;
+                  _searchText = text;
                 });
               },
               decoration: const InputDecoration(
                 hintText: "Input city name",
-                hintStyle: TextStyle(
-                  fontSize: 20,
-                  fontStyle: FontStyle.italic,
-                  fontFamily: 'Arial'
-                ),
+                hintStyle: TextStyle(fontSize: 20, fontStyle: FontStyle.italic, fontFamily: 'Arial'),
                 prefixIcon: Icon(Icons.search),
                 prefixIconColor: Colors.pinkAccent,
               ),
@@ -85,15 +89,14 @@ class _SelectCity extends State<SelectCity>{
               itemCount: filteredCities.length,
               itemBuilder: (BuildContext context, int index) {
                 return SizedBox(
-                  // width: size.width * 0.8,
                   child: Container(
-                    height: size.height/15,
+                    height: size.height / 15,
                     margin: const EdgeInsets.only(top: 15, left: 20, right: 20),
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 190, 190, 190),
                       borderRadius: BorderRadius.circular(10),
-                      border: cities[index].isSelected == true ? Border.all(
-                        color: Colors.lightBlue, width: 3)
+                      border: cities[index].isSelected == true
+                          ? Border.all(color: Colors.lightBlue, width: 3)
                           : Border.all(color: Colors.yellow),
                       boxShadow: [
                         BoxShadow(
@@ -102,22 +105,24 @@ class _SelectCity extends State<SelectCity>{
                           blurRadius: 5,
                           offset: const Offset(0, 3),
                         )
-                      ]
+                      ],
                     ),
                     child: ListTile(
-                      // contentPadding: const EdgeInsets.only(bottom:10),
                       leading: GestureDetector(
-                        onTap: (){
+                        onTap: () {
                           setState(() {
-                            cities[index].isSelected =! cities[index].isSelected;
+                            cities[index].isSelected = !cities[index].isSelected;
                           });
                         },
-                        child: Image.asset(cities[index].isSelected == true ?
-                        'assets/checked.png' : 'assets/unchecked.png', width: 30,
+                        child: Image.asset(
+                          cities[index].isSelected == true
+                              ? 'assets/checked.png'
+                              : 'assets/unchecked.png',
+                          width: 30,
                         ),
-                        // const SizedBox(width: 20,)
                       ),
-                      title: Text(filteredCities[index].name,
+                      title: Text(
+                        filteredCities[index].name,
                         style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ),
