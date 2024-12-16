@@ -41,7 +41,7 @@ class _SelectCity extends State<SelectCity> {
               List<City> selectedCities = cities.where((city) => city.isSelected).toList();
               if (selectedCities.isNotEmpty) {
                 // Trả lại tên thành phố đã chọn cho Home
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => Home(location: selectedCities[0].name),
@@ -49,7 +49,7 @@ class _SelectCity extends State<SelectCity> {
                 );
               } else {
                 // Nếu không chọn thành phố nào, giữ nguyên
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const Home(location: 'Hà Nội')),
                 );
