@@ -14,60 +14,60 @@ class GetStarted extends StatelessWidget {
         width: size.width,
         height: size.height,
         child: Stack(
-          children: [
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // const SizedBox(height: 30,),
-                Image.asset("assets/start-app.png"),
-                const SizedBox(height: 60,),
-                GestureDetector(
-                  onTap: (){
-                    Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (context)=> const SelectCity()
-                    ));
-                  },
-                  child: Container(
-                    height: 60,
-                    width: size.width * 0.5,
-                    decoration: const BoxDecoration(
-                      color: Colors.purpleAccent,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                    ),
-                    child: const Center(
-                      child: Text('Start',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // const SizedBox(height: 30,),
+                  Image.asset("assets/start-app.png"),
+                  const SizedBox(height: 60,),
+                  GestureDetector(
+                      onTap: (){
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                            builder: (context)=> const SelectCity()
+                        ));
+                      },
+                      child: Container(
+                        height: 60,
+                        width: size.width * 0.5,
+                        decoration: const BoxDecoration(
+                          color: Colors.purpleAccent,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),
-                      ),
-                    ),
-                  )
-                ),
-              ],
-            ),
-            Positioned(
-              bottom: 16,
-              right:16,
-              child: ElevatedButton(
-                onPressed: () {
-                  _showMyInfo(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding: const EdgeInsets.all(3),
-                  shape: CircleBorder(),
-                ),
-                child: const Icon(
-                  Icons.error,
-                  color: Colors.blue,
-                  size: 36,
-                ),
+                        child: const Center(
+                          child: Text('Start',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      )
+                  ),
+                ],
               ),
-            )
-          ]
+              Positioned(
+                bottom: 16,
+                right:16,
+                child: ElevatedButton(
+                  onPressed: () {
+                    _showMyInfo(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    padding: const EdgeInsets.all(3),
+                    shape: CircleBorder(),
+                  ),
+                  child: const Icon(
+                    Icons.error,
+                    color: Colors.blue,
+                    size: 36,
+                  ),
+                ),
+              )
+            ]
         ),
       ),
     );
