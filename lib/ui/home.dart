@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_app/api/weather_api.dart';
 import 'package:weather_app/models/weather.dart';
+import 'package:weather_app/models/weather_next_hour.dart';
 import 'package:weather_app/ui/select_city.dart';
-import 'package:weather_app/widgets/weather_item.dart';  // Import weatherItem widget
+import 'package:weather_app/widgets/weather_item.dart';
+
+import 'next_hour.dart';  // Import weatherItem widget
 
 class Home extends StatefulWidget {
   final String location;
@@ -186,7 +189,7 @@ class _HomeState extends State<Home> {
                           Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text(
-                              currentWeather!.temp.toStringAsFixed(1),
+                              currentWeather!.temp.round().toStringAsFixed(1),
                               style: TextStyle(
                                 fontSize: 80,
                                 fontWeight: FontWeight.bold,
@@ -216,19 +219,19 @@ class _HomeState extends State<Home> {
                   children: [
                     weatherItem(
                       text: 'Tốc độ gió',
-                      value: currentWeather!.wind.toInt(),
+                      value: currentWeather!.wind.round(),
                       unit: 'km/h',
                       imageUrl: 'assets/windspeed.png',
                     ),
                     weatherItem(
                       text: 'Độ ẩm',
-                      value: currentWeather!.humidity.toInt(),
+                      value: currentWeather!.humidity.round(),
                       unit: '%',
                       imageUrl: 'assets/humidity.png',
                     ),
                     weatherItem(
-                      text: 'Nhiệt độ tối đa',
-                      value: currentWeather!.temp.toInt(),
+                      text: 'Cảm giác như',
+                      value: currentWeather!.feels_like.round(),
                       unit: '°C',
                       imageUrl: 'assets/max-temp.png',
                     ),
@@ -236,6 +239,23 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 50),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NextHourScreen(cityName: location),
+                      ),
+                    );
+                  },
+                  child: Text(
+                    ("Forecast weather for next hour for $location"),
+                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                ),
+              )
             ],
           ),
         ),
