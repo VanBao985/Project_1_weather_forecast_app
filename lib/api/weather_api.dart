@@ -107,7 +107,11 @@ class TestAPI1{
     weather = await WeatherApi.fetchWeatherData(name);
     temperature = weather.temp;
     weatherStateName = weather.main;
-    print(temperature);
+    print(weather.temp);
+    print(weather.feels_like);
+    print(weather.sunrise);
+    print(weather.sunset);
+    print(weather.wind);
     print(weatherStateName);
   }
 }
@@ -129,5 +133,5 @@ class TestAPI2{
   }
 }
 void main() async {
-  TestAPI2.fetchData();
+  TestAPI1.fetchData("Ha Noi");
 }
