@@ -20,6 +20,7 @@ class _HomeState extends State<Home> {
   late String location;
   Weather? currentWeather;
   bool isLoading = true;
+  String backgroundImage = 'assets/default.jpg';  // Hình nền mặc định
 
   final Shader linearGradient = const LinearGradient(
     colors: <Color>[Color(0xffABCFF2), Color(0xff9AC6F3)],
@@ -40,6 +41,16 @@ class _HomeState extends State<Home> {
       Weather weather = await WeatherApi.fetchWeatherData(location);
       setState(() {
         currentWeather = weather;
+        // Thay đổi hình nền dựa trên điều kiện thời tiết
+        if (currentWeather!.description.contains('clear')) {
+          backgroundImage = 'assets/sunny.jpg'; // Hình nền trời nắng
+        } else if (currentWeather!.description.contains('rain')) {
+          backgroundImage = 'assets/rainy.gif'; // Hình nền trời mưa
+        } else if (currentWeather!.description.contains('clouds')) {
+          backgroundImage = 'assets/cloudy.jpg'; // Hình nền trời mây
+        } else {
+          backgroundImage = 'assets/default.jpg'; // Hình nền mặc định
+        }
       });
     } catch (e) {
       print("Error fetching weather data: $e");
@@ -59,9 +70,9 @@ class _HomeState extends State<Home> {
         preferredSize: const Size.fromHeight(100),
         child: AppBar(
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/background.png'),
+                image: AssetImage(backgroundImage), // Dùng hình nền động
                 fit: BoxFit.cover,
               ),
             ),
@@ -111,9 +122,9 @@ class _HomeState extends State<Home> {
           : Container(
         width: size.width,
         height: size.height,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/background.png'),
+            image: AssetImage(backgroundImage),
             fit: BoxFit.cover,
           ),
         ),
@@ -201,7 +212,6 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 20),
-              // Using weatherItem widget
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: Row(
