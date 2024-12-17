@@ -189,7 +189,7 @@ class HourlyWeatherCard extends StatelessWidget {
               ),
             ],
           ),
-          const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 10),
+          const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 18),
         ],
       ),
     );
