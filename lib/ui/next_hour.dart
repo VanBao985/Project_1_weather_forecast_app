@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/weather_next_hour.dart';
 import '../api/weather_api.dart';
+import 'package:intl/intl.dart';
 
 class NextHourScreen extends StatefulWidget {
   final String cityName;
@@ -13,7 +14,6 @@ class NextHourScreen extends StatefulWidget {
 
 class _NextHourScreenState extends State<NextHourScreen> {
   late Future<List<WeatherNextHour>> weatherNextHour;
-  List<String> missingIcons = [];
 
   @override
   void initState() {
@@ -21,18 +21,16 @@ class _NextHourScreenState extends State<NextHourScreen> {
     weatherNextHour = _fetchWeatherData();
   }
 
-  // Fetch weather data for the upcoming hours
   Future<List<WeatherNextHour>> _fetchWeatherData() async {
     try {
       final data = await WeatherApi.fetchWeatherNextHour(widget.cityName);
       return data;
     } catch (e) {
       debugPrint("Error fetching weather data: $e");
-      return []; // Return empty list on error
+      return [];
     }
   }
 
-  // Map API weather icons to local assets
   String _mapWeatherIcon(String? apiIcon) {
     final Map<String, String> iconMap = {
       "01d": "clear.png",
@@ -56,10 +54,7 @@ class _NextHourScreenState extends State<NextHourScreen> {
     };
 
     if (apiIcon == null || !iconMap.containsKey(apiIcon)) {
-      if (!missingIcons.contains(apiIcon ?? "")) {
-        missingIcons.add(apiIcon ?? "Unknown");
-      }
-      return "assets/unchecked.png"; // Fallback icon for missing API icons
+      return "assets/unchecked.png";
     }
     return "assets/${iconMap[apiIcon]}";
   }
@@ -119,13 +114,20 @@ class _NextHourScreenState extends State<NextHourScreen> {
   }
 }
 
-// Widget để hiển thị từng card dự báo thời tiết
 class HourlyWeatherCard extends StatelessWidget {
   final WeatherNextHour forecast;
   final String Function(String?) mapWeatherIcon;
 
   const HourlyWeatherCard({Key? key, required this.forecast, required this.mapWeatherIcon}) : super(key: key);
-
+  String _formatTime(String time) {
+    try {
+      final DateTime dateTime = DateTime.parse(time);
+      final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+      return formatter.format(dateTime);
+    } catch (e) {
+      return "Invalid time";
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -152,7 +154,7 @@ class HourlyWeatherCard extends StatelessWidget {
                 width: 50,
                 height: 50,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.cloud_off, size: 50, color: Colors.grey);
+                  return const Icon(Icons.cloud_off, size: 50, color: Colors.grey); // Hiển thị khi lỗi tải icon
                 },
               ),
               const SizedBox(width: 16),
@@ -160,7 +162,7 @@ class HourlyWeatherCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    forecast.timeForecast ?? "Unknown Time",
+                    _formatTime(forecast.timeForecast ?? "Unknown Time"),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
