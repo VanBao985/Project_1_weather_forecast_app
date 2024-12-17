@@ -45,10 +45,10 @@ class _NextHourScreenState extends State<NextHourScreen> {
       "04n": "overcast.png",
       "09d": "showers.png",
       "09n": "showers.png",
-      "10d": "heavyrain.png",
-      "10n": "heavyrain.png",
-      "11d": "thunderstorm.png",
-      "11n": "thunderstorm.png",
+      "10d": "lightrain.png",
+      "10n": "lightrain.png",
+      "11d": "heavyrain.png",
+      "11n": "heavyrain.png",
       "13d": "snow.png",
       "13n": "snow.png",
       "50d": "mist.png",
@@ -86,7 +86,12 @@ class _NextHourScreenState extends State<NextHourScreen> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
+              return Center(
+                child: Text(
+                  'Error: ${snapshot.error}',
+                  style: const TextStyle(fontSize: 16, color: Colors.redAccent),
+                ),
+              );
             } else if (snapshot.hasData && snapshot.data!.isNotEmpty) {
               final weatherDataList = snapshot.data!;
               return ListView.builder(
@@ -100,7 +105,12 @@ class _NextHourScreenState extends State<NextHourScreen> {
                 },
               );
             } else {
-              return const Center(child: Text('No data available.'));
+              return const Center(
+                child: Text(
+                  'No data available.',
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              );
             }
           },
         ),
@@ -109,7 +119,7 @@ class _NextHourScreenState extends State<NextHourScreen> {
   }
 }
 
-// Hourly weather card widget
+// Widget để hiển thị từng card dự báo thời tiết
 class HourlyWeatherCard extends StatelessWidget {
   final WeatherNextHour forecast;
   final String Function(String?) mapWeatherIcon;
@@ -163,6 +173,14 @@ class HourlyWeatherCard extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 16,
                       color: Colors.blueGrey,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    forecast.description ?? "Unknown weather",
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
                     ),
                   ),
                 ],
