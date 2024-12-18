@@ -111,8 +111,10 @@ class _SelectCity extends State<SelectCity> {
                       leading: GestureDetector(
                         onTap: () {
                           setState(() {
-                            cities[index].isSelected = !cities[index].isSelected;
-                          });
+                            for (City city in cities) {
+                              city.isSelected = false;
+                            }
+                            cities[index].isSelected = true;                          });
                         },
                         child: Image.asset(
                           cities[index].isSelected == true

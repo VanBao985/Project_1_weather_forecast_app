@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/weather_next_hour.dart';
 import '../api/weather_api.dart';
 import 'package:intl/intl.dart';
+import 'detail_next_hour.dart';
 
 class NextHourScreen extends StatefulWidget {
   final String cityName;
@@ -14,7 +15,6 @@ class NextHourScreen extends StatefulWidget {
 
 class _NextHourScreenState extends State<NextHourScreen> {
   late Future<List<WeatherNextHour>> weatherNextHour;
-
   @override
   void initState() {
     super.initState();
@@ -30,6 +30,7 @@ class _NextHourScreenState extends State<NextHourScreen> {
       return [];
     }
   }
+
 
   String _mapWeatherIcon(String? apiIcon) {
     final Map<String, String> iconMap = {
@@ -96,6 +97,8 @@ class _NextHourScreenState extends State<NextHourScreen> {
                   return HourlyWeatherCard(
                     forecast: weatherDataList[index],
                     mapWeatherIcon: _mapWeatherIcon,
+                    location: widget.cityName,
+                    selectedId: index,
                   );
                 },
               );
@@ -117,8 +120,11 @@ class _NextHourScreenState extends State<NextHourScreen> {
 class HourlyWeatherCard extends StatelessWidget {
   final WeatherNextHour forecast;
   final String Function(String?) mapWeatherIcon;
+  final String location;
+  final int selectedId;
 
-  const HourlyWeatherCard({Key? key, required this.forecast, required this.mapWeatherIcon}) : super(key: key);
+  const HourlyWeatherCard({Key? key, required this.forecast, required this.mapWeatherIcon,
+    required this.location, required this.selectedId}) : super(key: key);
   String _formatTime(String time) {
     try {
       final DateTime dateTime = DateTime.parse(time);
@@ -144,53 +150,79 @@ class HourlyWeatherCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            children: [
-              Image.asset(
-                mapWeatherIcon(forecast.icon),
-                width: 50,
-                height: 50,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Icon(Icons.cloud_off, size: 50, color: Colors.grey); // Hiển thị khi lỗi tải icon
-                },
-              ),
-              const SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _formatTime(forecast.timeForecast ?? "Unknown Time"),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  DetailNextHour(location: location, selectedId: selectedId,),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.ease;
+
+                var tween = Tween(begin: begin, end: end)
+                    .chain(CurveTween(curve: curve));
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+            ),
+          );
+        },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: [
+                Image.asset(
+                  mapWeatherIcon(forecast.icon),
+                  width: 50,
+                  height: 50,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(Icons.cloud_off, size: 50, color: Colors.grey); // Hiển thị khi lỗi tải icon
+                  },
+                ),
+                const SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _formatTime(forecast.timeForecast ?? "Unknown Time"),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '${forecast.temp.toStringAsFixed(1)}°C',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.blueGrey,
+                    const SizedBox(height: 4),
+                    Text(
+                      '${forecast.temp.toStringAsFixed(1)}°C',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.blueGrey,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    forecast.description ?? "Unknown weather",
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
+                    const SizedBox(height: 4),
+                    Text(
+                      forecast.description ?? "Unknown weather",
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 18),
-        ],
+                  ],
+                ),
+              ],
+            ),
+            const Icon(Icons.arrow_forward_ios, color: Colors.grey, size: 18),
+          ],
+        ),
       ),
     );
   }
