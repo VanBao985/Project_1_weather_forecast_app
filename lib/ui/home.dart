@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:weather_app/api/weather_api.dart';
 import 'package:weather_app/models/weather.dart';
-import 'package:weather_app/models/weather_next_hour.dart';
 import 'package:weather_app/ui/select_city.dart';
 import 'package:weather_app/widgets/weather_item.dart';
-
-import 'next_hour.dart';  // Import weatherItem widget
+import 'next_hour.dart';
 
 class Home extends StatefulWidget {
   final String location;
@@ -20,7 +19,7 @@ class _HomeState extends State<Home> {
   late String location;
   Weather? currentWeather;
   bool isLoading = true;
-  String backgroundImage = 'assets/default.jpg';  // Hình nền mặc định
+  String backgroundImage = 'assets/default.jpg';
 
   final Shader linearGradient = const LinearGradient(
     colors: <Color>[Color(0xffABCFF2), Color(0xff9AC6F3)],
@@ -29,7 +28,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    location = widget.location; // Set location from constructor
+    location = widget.location;
     fetchCurrentWeather();
   }
 
@@ -41,15 +40,14 @@ class _HomeState extends State<Home> {
       Weather weather = await WeatherApi.fetchWeatherData(location);
       setState(() {
         currentWeather = weather;
-        // Thay đổi hình nền dựa trên điều kiện thời tiết
         if (currentWeather!.description.contains('clear')) {
-          backgroundImage = 'assets/sunny.jpg'; // Hình nền trời nắng
+          backgroundImage = 'assets/sunny.jpg';
         } else if (currentWeather!.description.contains('rain')) {
-          backgroundImage = 'assets/rainy.gif'; // Hình nền trời mưa
+          backgroundImage = 'assets/rainy.gif';
         } else if (currentWeather!.description.contains('clouds')) {
-          backgroundImage = 'assets/cloudy.jpg'; // Hình nền trời mây
+          backgroundImage = 'assets/cloudy.jpg';
         } else {
-          backgroundImage = 'assets/default.jpg'; // Hình nền mặc định
+          backgroundImage = 'assets/default.jpg';
         }
       });
     } catch (e) {
@@ -66,54 +64,55 @@ class _HomeState extends State<Home> {
     Size size = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(100),
-        child: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(backgroundImage), // Dùng hình nền động
-                fit: BoxFit.cover,
-              ),
+      appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueAccent, Colors.lightBlueAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.asset(
-                  'assets/profile.png',
-                  width: 50,
-                  height: 50,
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SelectCity(),
-                    ),
-                  ).then((selectedLocation) {
-                    if (selectedLocation != null) {
-                      setState(() {
-                        location = selectedLocation;
-                      });
-                      fetchCurrentWeather();
-                    }
-                  });
-                },
-                child: Text(
-                  location,
-                  style: const TextStyle(fontSize: 20, color: Colors.white),
-                ),
-              ),
-            ],
-          ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
         ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ClipOval(
+              child: Image.asset(
+                'assets/profile.png',
+                width: 40,
+                height: 40,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SelectCity(),
+                  ),
+                ).then((selectedLocation) {
+                  if (selectedLocation != null) {
+                    setState(() {
+                      location = selectedLocation;
+                    });
+                    fetchCurrentWeather();
+                  }
+                });
+              },
+              child: Text(
+                location,
+                style: GoogleFonts.poppins(fontSize: 20, color: Colors.white),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.refresh, color: Colors.white),
+              onPressed: fetchCurrentWeather,
+            ),
+          ],
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -135,7 +134,7 @@ class _HomeState extends State<Home> {
             children: [
               Text(
                 location,
-                style: const TextStyle(
+                style: GoogleFonts.poppins(
                   fontWeight: FontWeight.bold,
                   fontSize: 30.0,
                   color: Colors.white,
@@ -143,7 +142,7 @@ class _HomeState extends State<Home> {
               ),
               Text(
                 DateFormat('dd MMMM yyyy').format(DateTime.now()),
-                style: const TextStyle(
+                style: GoogleFonts.poppins(
                   fontSize: 16.0,
                   color: Colors.white,
                 ),
@@ -153,8 +152,19 @@ class _HomeState extends State<Home> {
                 width: size.width,
                 height: 200,
                 decoration: BoxDecoration(
-                  color: Colors.blueAccent.withOpacity(0.7),
+                  gradient: LinearGradient(
+                    colors: [Colors.blueAccent.withOpacity(0.8), Colors.lightBlueAccent],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
                   borderRadius: BorderRadius.circular(15),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
+                    ),
+                  ],
                 ),
                 child: Stack(
                   children: [
@@ -174,7 +184,7 @@ class _HomeState extends State<Home> {
                       left: 20,
                       child: Text(
                         currentWeather!.description,
-                        style: const TextStyle(
+                        style: GoogleFonts.poppins(
                           fontSize: 20,
                           color: Colors.white,
                         ),
@@ -239,23 +249,49 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 50),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NextHourScreen(cityName: location),
-                      ),
-                    );
-                  },
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          NextHourScreen(cityName: location),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        const curve = Curves.ease;
+
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(vertical: 15),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.blueAccent, Colors.lightBlueAccent],
+                    ),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
                   child: Text(
-                    ("Forecast weather for next hour for $location"),
-                    style: const TextStyle(fontSize: 20, color: Colors.white),
+                    "Dự báo thời tiết giờ tiếp theo",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
