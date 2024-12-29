@@ -15,6 +15,7 @@ class NextHourScreen extends StatefulWidget {
 
 class _NextHourScreenState extends State<NextHourScreen> {
   late Future<List<WeatherNextHour>> weatherNextHour;
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +31,6 @@ class _NextHourScreenState extends State<NextHourScreen> {
       return [];
     }
   }
-
 
   String _mapWeatherIcon(String? apiIcon) {
     final Map<String, String> iconMap = {
@@ -125,6 +125,7 @@ class HourlyWeatherCard extends StatelessWidget {
 
   const HourlyWeatherCard({Key? key, required this.forecast, required this.mapWeatherIcon,
     required this.location, required this.selectedId}) : super(key: key);
+
   String _formatTime(String time) {
     try {
       final DateTime dateTime = DateTime.parse(time);
@@ -134,6 +135,7 @@ class HourlyWeatherCard extends StatelessWidget {
       return "Invalid time";
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -154,24 +156,8 @@ class HourlyWeatherCard extends StatelessWidget {
         onTap: () {
           Navigator.push(
             context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  DetailNextHour(location: location, selectedId: selectedId,),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0);
-                const end = Offset.zero;
-                const curve = Curves.ease;
-
-                var tween = Tween(begin: begin, end: end)
-                    .chain(CurveTween(curve: curve));
-                var offsetAnimation = animation.drive(tween);
-
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
+            MaterialPageRoute(
+              builder: (context) => DetailNextHour(location: location, forecast: forecast),
             ),
           );
         },
@@ -185,7 +171,7 @@ class HourlyWeatherCard extends StatelessWidget {
                   width: 50,
                   height: 50,
                   errorBuilder: (context, error, stackTrace) {
-                    return const Icon(Icons.cloud_off, size: 50, color: Colors.grey); // Hiển thị khi lỗi tải icon
+                    return const Icon(Icons.cloud_off, size: 50, color: Colors.grey);
                   },
                 ),
                 const SizedBox(width: 16),
