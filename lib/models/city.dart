@@ -19,7 +19,6 @@ class City{
     City(false, 'Vinh', 1562798, false),
     City(false, 'Viet Tri', 1562820, false),
     City(false, 'Thua Thien Hue', 1565033, false),
-    City(false, 'Thanh Hoa', 1566165, false),
     City(false, 'Thai Binh', 1566346, false),
     City(false, 'Soc Trang', 1567788, false),
     City(false, 'Quang Tri', 1568738, false),
