@@ -24,10 +24,8 @@ class City{
     City(false, 'Soc Trang', 1567788, false),
     City(false, 'Quang Tri', 1568738, false),
     City(false, 'Pleiku', 1569684, false),
-    City(false, 'Ninh Binh', 1566319, false),
     City(false, 'Nha Trang', 1572151, false),
     City(false, 'Hoa Binh', 1567788, false),
-    City(false, 'Nam Dinh', 1573517, false),
   ];
 
 

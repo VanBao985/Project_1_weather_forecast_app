@@ -18,6 +18,12 @@ class _SelectCity extends State<SelectCity> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
+    // Lọc danh sách thành phố dựa trên _searchText
+    List<City> filteredCities = _searchText.isEmpty
+        ? cities
+        : cities.where((city) => city.name.toLowerCase().contains(_searchText.toLowerCase())).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Row(
@@ -95,7 +101,7 @@ class _SelectCity extends State<SelectCity> {
                     decoration: BoxDecoration(
                       color: const Color.fromARGB(255, 190, 190, 190),
                       borderRadius: BorderRadius.circular(10),
-                      border: cities[index].isSelected == true
+                      border: filteredCities[index].isSelected
                           ? Border.all(color: Colors.lightBlue, width: 3)
                           : Border.all(color: Colors.yellow),
                       boxShadow: [
@@ -114,10 +120,13 @@ class _SelectCity extends State<SelectCity> {
                             for (City city in cities) {
                               city.isSelected = false;
                             }
-                            cities[index].isSelected = true;                          });
+                            filteredCities[index].isSelected = true;
+
+                            cities.firstWhere((city) => city.name == filteredCities[index].name).isSelected = true;
+                          });
                         },
                         child: Image.asset(
-                          cities[index].isSelected == true
+                          filteredCities[index].isSelected
                               ? 'assets/checked.png'
                               : 'assets/unchecked.png',
                           width: 30,
@@ -136,13 +145,5 @@ class _SelectCity extends State<SelectCity> {
         ],
       ),
     );
-  }
-
-  List<City> get filteredCities {
-    if (_searchText.isEmpty) {
-      return cities;
-    } else {
-      return cities.where((city) => city.name.toLowerCase().contains(_searchText.toLowerCase())).toList();
-    }
   }
 }
