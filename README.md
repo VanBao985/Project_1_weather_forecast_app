@@ -1,16 +1,5 @@
-# weather_app
-
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# weather forecast app
+## Hướng dẫn cài đặt
+- sử dụng IDE Android Studio Code với nền tảng Flutter framework
+- Cài đặt máy ảo Pixel 2, 4 hoặc cao hơn với API 30 trở lên (để có thể đáp ứng được phần mềm)
+- Chạy file main.dart trên máy ảo đã được cài 
