@@ -41,7 +41,7 @@ class _HomeState extends State<Home> {
       setState(() {
         currentWeather = weather;
         if (currentWeather!.description.contains('clear')) {
-          backgroundImage = 'assets/sunny.jpg';
+          backgroundImage = 'assets/clear.jpg';
         } else if (currentWeather!.description.contains('rain')) {
           backgroundImage = 'assets/rainy.gif';
         } else if (currentWeather!.description.contains('clouds')) {

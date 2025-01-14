@@ -35,7 +35,7 @@ class DetailNextHour extends StatelessWidget {
         return 'assets/cloudy.jpg';
       case 'shower rain':
         return 'assets/rainy.jpg';
-      case 'rain':
+      case 'light rain':
         return 'assets/rainy.jpg';
       case 'thunderstorm':
         return 'assets/thunderstorm.jpg';
